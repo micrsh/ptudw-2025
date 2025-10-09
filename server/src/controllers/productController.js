@@ -62,9 +62,9 @@ controller.getAllProducts = async (req, res) => {
 
   // sort theo name, price, createdAt
   const validSortFields = ['name', 'price', 'createdAt'];
-  const sortOrderOptions = ['asc', 'desc'];
+  const validSortOrder = ['asc', 'desc'];
 
-  if (validSortFields.includes(sortBy) && validSortFields.includes(sortOrder)) {
+  if (validSortFields.includes(sortBy) && validSortOrder.includes(sortOrder)) {
     options.order = [[sortBy, sortOrder]];
   } else {
     sortBy = 'price';
@@ -73,7 +73,7 @@ controller.getAllProducts = async (req, res) => {
   }
 
   // truy van san pham 
-  let product = await Product.findAll(options);
+  let product = await Product.findAndCountAll(options);
 
   // Kiem tra neu khong co san pham nao
   if (!product || product.length === 0) {
@@ -83,6 +83,12 @@ controller.getAllProducts = async (req, res) => {
   // Tra ve danh sach san pham
   const responseData = {
     products: product,
+    pagination: {
+      totalItems: product.count,
+      totalPages: Math.ceil(product.count / limitNum),
+      currentPage: pageNum,
+      limit: limitNum,
+    },
     filter: {
       search: search || '',
       categoryId: categoryId || null,
