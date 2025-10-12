@@ -1,11 +1,21 @@
 const controller = {};
-const ApiError = require('../utils/ApiError');
-const ApiResponse = require('../utils/ApiResponse');
-const { Product, Category, Tag } = require('../models');
-const { Op } = require('sequelize');
+const ApiError = require("../utils/ApiError");
+const ApiResponse = require("../utils/ApiResponse");
+const { Image, Product, Category, Tag, Review, User } = require("../models");
+const { Op } = require("sequelize");
 
 controller.getAllProducts = async (req, res) => {
-  let { search, categoryId, tagId, minPrice, maxPrice, page = 1, limit = 10, sortBy = 'price', sortOrder = 'asc' } = req.query;
+  let {
+    search,
+    categoryId,
+    tagId,
+    minPrice,
+    maxPrice,
+    page = 1,
+    limit = 10,
+    sortBy = "price",
+    sortOrder = "asc",
+  } = req.query;
 
   const pageNum = parseInt(page);
   const limitNum = parseInt(limit);
@@ -17,8 +27,13 @@ controller.getAllProducts = async (req, res) => {
     offset: offset,
     order: [[sortBy, sortOrder]],
     include: [
-      { model: Category, adtributes: ['id', 'name'] },
-      { model: Tag, through: { attributes: [] }, attributes: ['id', 'name'], required: false },
+      { model: Category, adtributes: ["id", "name"] },
+      {
+        model: Tag,
+        through: { attributes: [] },
+        attributes: ["id", "name"],
+        required: false,
+      },
     ],
     distinct: true, // Dam bao khong lay trung data
   };
@@ -61,18 +76,18 @@ controller.getAllProducts = async (req, res) => {
   }
 
   // sort theo name, price, createdAt
-  const validSortFields = ['name', 'price', 'createdAt'];
-  const validSortOrder = ['asc', 'desc'];
+  const validSortFields = ["name", "price", "createdAt"];
+  const validSortOrder = ["asc", "desc"];
 
   if (validSortFields.includes(sortBy) && validSortOrder.includes(sortOrder)) {
     options.order = [[sortBy, sortOrder]];
   } else {
-    sortBy = 'price';
-    sortOrder = 'asc';
-    options.order = [['price', 'asc']];
+    sortBy = "price";
+    sortOrder = "asc";
+    options.order = [["price", "asc"]];
   }
 
-  // truy van san pham 
+  // truy van san pham
   let product = await Product.findAndCountAll(options);
 
   // Kiem tra neu khong co san pham nao
@@ -82,7 +97,7 @@ controller.getAllProducts = async (req, res) => {
 
   // Tra ve danh sach san pham
   const responseData = {
-    products: product,
+    products: product.rows,
     pagination: {
       totalItems: product.count,
       totalPages: Math.ceil(product.count / limitNum),
@@ -90,7 +105,7 @@ controller.getAllProducts = async (req, res) => {
       limit: limitNum,
     },
     filter: {
-      search: search || '',
+      search: search || "",
       categoryId: categoryId || null,
       tagId: tagId || null,
       minPrice: minPrice || null,
@@ -98,11 +113,15 @@ controller.getAllProducts = async (req, res) => {
       limit: limitNum,
       page: pageNum,
       sortBy: sortBy,
-      sortOrder: sortOrder
+      sortOrder: sortOrder,
     },
   };
 
-  res.status(200).json(new ApiResponse(200, "Products retrieved successfully", responseData));
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, responseData, "Products retrieved successfully")
+    );
 };
 
 controller.getProductById = async (req, res) => {
@@ -113,19 +132,39 @@ controller.getProductById = async (req, res) => {
   id = parseInt(id);
   const product = await Product.findByPk(id, {
     include: [
-      { model: Category, attributes: ['id', 'name'] },
-      { model: Tag, through: { attributes: [] }, attributes: ['id', 'name'], required: false },
-    ]
+      { model: Image, attributes: ["id", "imagePath", "altText"] },
+      { model: Category, attributes: ["id", "name"] },
+      {
+        model: Tag,
+        through: { attributes: [] },
+        attributes: ["id", "name"],
+        required: false,
+      },
+      {
+        model: Review,
+        attributes: ["id", "rating", "comment", "createdAt"],
+        include: [
+          {
+            model: User,
+            attributes: ["firstName", "lastName", "profileImage"],
+          }
+        ]
+      },
+    ],
   });
   if (!product) {
     throw new ApiError(404, "San pham khong ton tai");
   }
-  res.status(200).json(new ApiResponse(200, "San pham lay thanh cong", product));
+
+  product.Reviews
+  res
+    .status(200)
+    .json(new ApiResponse(200, product, "San pham lay thanh cong"));
 };
 
 controller.createProduct = async (req, res) => {
   const { name, price, summary, description, categoryId, tagIds } = req.body;
-  if(!name || !price || !categoryId) {
+  if (!name || !price || !categoryId) {
     throw new ApiError(400, "Thieu thong tin san pham");
   }
 
@@ -142,7 +181,7 @@ controller.createProduct = async (req, res) => {
     price: parseFloat(price),
     summary,
     description,
-    categoryId: parseInt(categoryId)
+    categoryId: parseInt(categoryId),
   });
 
   // If tagIds are provided, associate them with the product
@@ -150,12 +189,14 @@ controller.createProduct = async (req, res) => {
     await newProduct.setTags(tagIds);
   }
 
-  res.status(201).json(new ApiResponse(201, "San pham tao thanh cong", newProduct));
+  res
+    .status(201)
+    .json(new ApiResponse(201, "San pham tao thanh cong", newProduct));
 };
 
 controller.updateProduct = async (req, res) => {
   let { id } = req.params;
-  const { name, price, description, categoryId,} = req.body;
+  const { name, price, description, categoryId } = req.body;
 
   if (isNaN(id)) {
     throw new ApiError(400, "ID phai la so nguyen");
@@ -166,7 +207,7 @@ controller.updateProduct = async (req, res) => {
   if (!product) {
     throw new ApiError(404, "San pham khong ton tai");
   }
-  
+
   if (name) {
     product.name = name;
   }
@@ -187,7 +228,9 @@ controller.updateProduct = async (req, res) => {
   }
 
   await product.save();
-  res.status(200).json(new ApiResponse(200, "San pham cap nhat thanh cong", product));
+  res
+    .status(200)
+    .json(new ApiResponse(200, "San pham cap nhat thanh cong", product));
 };
 
 controller.deleteProduct = async (req, res) => {
@@ -205,7 +248,9 @@ controller.deleteProduct = async (req, res) => {
   }
 
   await product.destroy();
-  res.status(200).json(new ApiResponse(200, "San pham xoa thanh cong", product));
+  res
+    .status(200)
+    .json(new ApiResponse(200, "San pham xoa thanh cong", product));
 };
 
 module.exports = controller;

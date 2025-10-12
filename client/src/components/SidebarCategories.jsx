@@ -45,7 +45,7 @@ export default function SidebarCategory() {
       <ul className="main-categories">
         {loading && <div> Dang tai...</div>}
         {error && <div className='alert alert-danger'>{error}</div>}
-        {categories.map((c) => (
+        {!loading && !error && categories.map((c) => (
           <li className="main-nav-list" key={c.id}>
             <a href="#">
               {c.name}
