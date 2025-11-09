@@ -1,6 +1,6 @@
 const controller = {};
-const ApiError = require('../utils/ApiError');
-const ApiResponse = require('../utils/ApiResponse');
+const ApiError = require('../utils/apiError');
+const ApiResponse = require('../utils/apiResponse');
 const { User } = require('../models');
 const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
@@ -31,7 +31,7 @@ controller.register = async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  
+
   const user = await User.create({ firstName, lastName, email, password: hashedPassword, phoneNumber, role: 'User' });
 
   const userResponse = {

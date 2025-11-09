@@ -1,6 +1,6 @@
 const controller = {};
 const { Product, Category } = require('../models');
-const ApiResponse = require('../utils/ApiResponse');
+const ApiResponse = require('../utils/apiResponse');
 
 controller.getAllCategories = async (req, res) => {
     const options = {
