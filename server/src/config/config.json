@@ -15,10 +15,17 @@
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "username": "ptudw_2025_db_user",
+    "password": "DV6pRJXi05BEkcvw4tMacKyr7mmFDFBq",
+    "database": "ptudw_2025_db",
+    "host": "dpg-d48c2uqli9vc7397kj2g-a.singapore-postgres.render.com",
+    "dialect": "postgres",
+    "port": 5432,
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
   }
 }
