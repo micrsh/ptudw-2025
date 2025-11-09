@@ -44,15 +44,17 @@ export default function SidebarCategory() {
       <div className="head">Browse Categories</div>
       <ul className="main-categories">
         {loading && <div> Dang tai...</div>}
-        {error && <div className='alert alert-danger'>{error}</div>}
-        {!loading && !error && categories.map((c) => (
-          <li className="main-nav-list" key={c.id}>
-            <a href="#">
-              {c.name}
-              <span className="number">({c.Products.length})</span>
-            </a>
-          </li>
-        ))}
+        {error && <div className="alert alert-danger">{error}</div>}
+        {!loading &&
+          !error &&
+          categories.map((c) => (
+            <li className="main-nav-list" key={c.id}>
+              <a href={`/product?category=${c.id}`}>
+                {c.name}
+                <span className="number">({c.Products.length})</span>
+              </a>
+            </li>
+          ))}
       </ul>
     </div>
   );

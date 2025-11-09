@@ -12,9 +12,8 @@ controller.getAllProducts = async (req, res) => {
     minPrice,
     maxPrice,
     page = 1,
-    limit = 10,
-    sortBy = "price",
-    sortOrder = "asc",
+    limit = 6,
+    sort = "newest"
   } = req.query;
 
   const pageNum = parseInt(page);
@@ -25,7 +24,6 @@ controller.getAllProducts = async (req, res) => {
     where: {},
     limit: limitNum,
     offset: offset,
-    order: [[sortBy, sortOrder]],
     include: [
       { model: Category, adtributes: ["id", "name"] },
       {
@@ -67,24 +65,37 @@ controller.getAllProducts = async (req, res) => {
   }
 
   // Loc theo khoang gia
+  options.where.price = {};
+  if (minPrice) {
+    if (isNaN(minPrice)) {
+      return new ApiError(400, "MinPrice must be a number");
+    }
+    minPrice = parseFloat(minPrice);
+    options.where.price[Op.gte] = minPrice;
+  }
+
   if (maxPrice) {
     if (isNaN(maxPrice)) {
       return new ApiError(400, "MaxPrice must be a number");
     }
     maxPrice = parseFloat(maxPrice);
-    options.where.price = { [Op.gte]: maxPrice };
+    options.where.price[Op.lte] = maxPrice;
   }
 
   // sort theo name, price, createdAt
-  const validSortFields = ["name", "price", "createdAt"];
-  const validSortOrder = ["asc", "desc"];
+  const validSortFields = {
+    "newest": { sortBy: "createdAt", sortOrder: "desc" },
+    "price_asc": { sortBy: "price", sortOrder: "asc" },
+    "price_desc": { sortBy: "price", sortOrder: "desc" },
+    "name_asc": { sortBy: "name", sortOrder: "asc" },
+    "name_desc": { sortBy: "name", sortOrder: "desc" },
+  }
 
-  if (validSortFields.includes(sortBy) && validSortOrder.includes(sortOrder)) {
-    options.order = [[sortBy, sortOrder]];
+  if (Object.keys(validSortFields).includes(sort)) {
+    const validSort = validSortFields[sort];
+    options.order = [[validSort.sortBy, validSort.sortOrder]];
   } else {
-    sortBy = "price";
-    sortOrder = "asc";
-    options.order = [["price", "asc"]];
+    options.order = [["createdAt", "desc"]];
   }
 
   // truy van san pham
@@ -112,8 +123,7 @@ controller.getAllProducts = async (req, res) => {
       maxPrice: maxPrice || null,
       limit: limitNum,
       page: pageNum,
-      sortBy: sortBy,
-      sortOrder: sortOrder,
+      sort: sort
     },
   };
 
