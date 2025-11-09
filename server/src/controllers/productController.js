@@ -1,6 +1,6 @@
 const controller = {};
-const ApiError = require("../utils/ApiError");
-const ApiResponse = require("../utils/ApiResponse");
+const ApiError = require("../utils/apiError");
+const ApiResponse = require("../utils/apiResponse");
 const { Image, Product, Category, Tag, Review, User } = require("../models");
 const { Op } = require("sequelize");
 
