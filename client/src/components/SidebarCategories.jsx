@@ -13,7 +13,7 @@ export default function SidebarCategory() {
       setError(null);
 
       try {
-        const res = await http.get("/api/v1/categories");
+        const res = await http.get("/categories");
         const data = res.data.data;
 
         if (!canceled) {
