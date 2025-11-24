@@ -1,4 +1,4 @@
-export default function Banner({ title='Karma Shop', to }) {
+export default function Banner({ title = "Karma Shop", to }) {
   return (
     <section className="banner-area organic-breadcrumb">
       <div className="container">
@@ -6,10 +6,10 @@ export default function Banner({ title='Karma Shop', to }) {
           <div className="col-first">
             <h1>{title}</h1>
             <nav className="d-flex align-items-center">
-              <a href="/">
+              <a href="/api/v1/">
                 Home
                 {to && <span className="lnr lnr-arrow-right" />}
-              </a>              
+              </a>
               {to && <a href={to}>{title}</a>}
             </nav>
           </div>

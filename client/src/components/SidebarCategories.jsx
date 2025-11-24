@@ -13,7 +13,7 @@ export default function SidebarCategory() {
       setError(null);
 
       try {
-        const res = await http.get("/categories");
+        const res = await http.get("/api/v1/categories");
         const data = res.data.data;
 
         if (!canceled) {
@@ -49,7 +49,7 @@ export default function SidebarCategory() {
           !error &&
           categories.map((c) => (
             <li className="main-nav-list" key={c.id}>
-              <a href={`/product?category=${c.id}`}>
+              <a href={`/api/v1/product?category=${c.id}`}>
                 {c.name}
                 <span className="number">({c.Products.length})</span>
               </a>
