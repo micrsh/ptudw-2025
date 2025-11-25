@@ -39,6 +39,8 @@ export default function ProductList() {
     p.set("limit", limit);
     p.set("page", page);
 
+    console.log("Query String:", p.toString());
+
     return p.toString();
   }, [categoryId, sort, limit, page, min, max]);
 
