@@ -52,6 +52,10 @@ export default function ProductList() {
       setError(null); // Đặt lại lỗi trước khi tải
       try {
         // Giả sử bạn có một hàm http.get để lấy dữ liệu từ API
+        console.log(
+          "API URL:",
+          `${import.meta.env.VITE_API_URL}/products?${queryString}`
+        );
         const res = await http.get(`/products?${queryString}`);
         const data = res.data.data; // Giả sử dữ liệu sản phẩm nằm trong res.data.data
 
