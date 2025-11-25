@@ -14,7 +14,7 @@ function App() {
       // don dep script khi unmount
       document.body.removeChild(script);
     };
-  });
+  }, []);
 
   return (
     <Layout>
