@@ -3,7 +3,7 @@ import Banner from "../components/Banner";
 export default function Contact() {
   return (
     <>
-      <Banner title="Contact Us" to="/api/v1/contact" />
+      <Banner title="Contact Us" to="/contact" />
       <section className="contact_area section_gap_bottom">
         <div className="container">
           <div

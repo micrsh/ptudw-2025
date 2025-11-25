@@ -6,7 +6,7 @@ export default function Banner({ title = "Karma Shop", to }) {
           <div className="col-first">
             <h1>{title}</h1>
             <nav className="d-flex align-items-center">
-              <a href="/api/v1/">
+              <a href="/">
                 Home
                 {to && <span className="lnr lnr-arrow-right" />}
               </a>
