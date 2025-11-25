@@ -16,6 +16,7 @@ export default function ProductList() {
 
   // Lay cac gia tri tu search params
   const categoryId = searchParams.get("category") || "";
+  console.log("Category ID:", categoryId);
   const sort = searchParams.get("sort") || "";
   const page = searchParams.get("page") || 1;
   const min = Number(searchParams.get("min")) || 0;
