@@ -3,7 +3,7 @@ import Banner from "../components/Banner";
 export default function Contact() {
   return (
     <>
-      <Banner />
+      <Banner title="Contact Us" to="/contact" />
       <div className="container">
         <div
           id="mapBox"
